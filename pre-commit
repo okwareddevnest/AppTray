@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Get list of changed files
+changed_files=$(git diff --cached --name-only)
+
+# Check if any relevant files were changed
+if echo "$changed_files" | grep -qE '^(apptray|build_apptray_deb\.sh)$'; then
+    # Check commit message for version bump indicators
+    commit_msg=$(git log -1 --pretty=%B)
+    if echo "$commit_msg" | grep -qi "BREAKING CHANGE"; then
+        ./version_manager.sh major
+    elif echo "$commit_msg" | grep -qi "feat:"; then
+        ./version_manager.sh minor
+    elif echo "$commit_msg" | grep -qi "fix:"; then
+        ./version_manager.sh patch
+    fi
+    
+    # Add version files to commit
+    git add version.txt apptray build_apptray_deb.sh
+fi
+
+exit 0 
