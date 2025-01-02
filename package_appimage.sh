@@ -22,6 +22,7 @@ PACKAGE_NAME=$(echo "$APP_DISPLAY_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-
 VERSION="1.0.0"
 ARCH="amd64"
 PACKAGE_DIR="${PACKAGE_NAME}-package"
+TEMP_EXTRACT_DIR="/tmp/${PACKAGE_NAME}-extract"
 
 echo "Packaging $APPIMAGE_PATH as $APP_DISPLAY_NAME ($PACKAGE_NAME)..."
 
@@ -68,6 +69,68 @@ echo "Copying AppImage..."
 cp "$APPIMAGE_PATH" "${PACKAGE_DIR}/opt/${PACKAGE_NAME}/${PACKAGE_NAME}.AppImage"
 chmod +x "${PACKAGE_DIR}/opt/${PACKAGE_NAME}/${PACKAGE_NAME}.AppImage"
 
+# Extract AppImage to get the icon
+echo "Extracting AppImage to get icon..."
+mkdir -p "$TEMP_EXTRACT_DIR"
+cd "$TEMP_EXTRACT_DIR"
+"$APPIMAGE_PATH" --appimage-extract >/dev/null 2>&1 || true
+
+# Try to find the icon in different formats
+ICON_FOUND=false
+# First, try to find .desktop file to get icon name
+if [ -d "squashfs-root" ]; then
+    DESKTOP_FILE=$(find squashfs-root -name "*.desktop" | head -n 1)
+    if [ -n "$DESKTOP_FILE" ]; then
+        ICON_NAME=$(grep -oP "^Icon=\K.*" "$DESKTOP_FILE")
+        if [ -n "$ICON_NAME" ]; then
+            # Look for icon with exact name
+            ICON_PATH=$(find squashfs-root -name "${ICON_NAME}.*" -o -name "${ICON_NAME}" | grep -E "\.(png|xpm|svg)$" | head -n 1)
+            if [ -n "$ICON_PATH" ]; then
+                echo "Found icon: $ICON_PATH"
+                # Convert icon to PNG if it's not already
+                case "$ICON_PATH" in
+                    *.svg)
+                        convert -background none -size 256x256 "$ICON_PATH" "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
+                        ;;
+                    *.xpm)
+                        convert "$ICON_PATH" "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
+                        ;;
+                    *.png)
+                        cp "$ICON_PATH" "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
+                        ;;
+                esac
+                ICON_FOUND=true
+            fi
+        fi
+    fi
+
+    # If icon not found by .desktop file, try to find any suitable icon
+    if [ "$ICON_FOUND" = false ]; then
+        ICON_PATH=$(find squashfs-root -type f -name "*.png" -o -name "*.svg" -o -name "*.xpm" | grep -iE "icon|logo" | head -n 1)
+        if [ -n "$ICON_PATH" ]; then
+            echo "Found alternative icon: $ICON_PATH"
+            case "$ICON_PATH" in
+                *.svg)
+                    convert -background none -size 256x256 "$ICON_PATH" "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
+                    ;;
+                *.xpm)
+                    convert "$ICON_PATH" "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
+                    ;;
+                *.png)
+                    cp "$ICON_PATH" "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
+                    ;;
+            esac
+            ICON_FOUND=true
+        fi
+    fi
+fi
+
+# If no icon found, create a default one
+if [ "$ICON_FOUND" = false ]; then
+    echo "No icon found in AppImage, creating default icon..."
+    convert -size 256x256 xc:blue "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
+fi
+
 # Create .desktop file
 echo "Creating .desktop file..."
 cat > "${PACKAGE_DIR}/usr/share/applications/${PACKAGE_NAME}.desktop" << EOF
@@ -80,10 +143,6 @@ Type=Application
 Categories=Utility;Application;
 Terminal=false
 EOF
-
-# Create a simple icon (blue square as placeholder)
-echo "Creating placeholder icon..."
-convert -size 256x256 xc:blue "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/${PACKAGE_NAME}.png"
 
 # Set correct permissions
 echo "Setting permissions..."
@@ -112,4 +171,4 @@ echo "dpkg -I ${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
 
 # Cleanup
 echo "Cleaning up build directory..."
-rm -rf "${PACKAGE_DIR}" 
+rm -rf "${PACKAGE_DIR}" "$TEMP_EXTRACT_DIR" 

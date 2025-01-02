@@ -5,7 +5,7 @@ set -e
 
 # Package details
 PACKAGE_NAME="apptray"
-VERSION="1.0.0"
+VERSION="1.1.0"
 ARCH="all"
 PACKAGE_DIR="${PACKAGE_NAME}-${VERSION}"
 
