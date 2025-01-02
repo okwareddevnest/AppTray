@@ -94,8 +94,12 @@ For more information, visit: https://github.com/okwareddevnest/apptray
 For issues and feature requests, please visit the GitHub repository.
 
 ## License
-Copyright © 2025 Dedan Okware. All rights reserved.
+This project is licensed under the MIT License.
+Copyright (c) 2025 Dedan Okware <softengdedan@gmail.com>
 EOF
+
+# Copy license file
+cp LICENSE "${PACKAGE_DIR}/usr/share/doc/${PACKAGE_NAME}/"
 
 # Set permissions
 find "${PACKAGE_DIR}" -type d -exec chmod 755 {} \;

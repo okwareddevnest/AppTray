@@ -66,6 +66,7 @@ apptray --gui
 ├── package_appimage.sh   # AppImage packaging script
 ├── apptray              # Main executable
 ├── apptray.desktop      # Desktop entry
+├── LICENSE              # MIT License
 └── README.md            # This file
 ```
 
@@ -87,9 +88,17 @@ Want to contribute? Great! Please:
 4. Push to the branch
 5. Create a Pull Request
 
+### Versioning
+
+We use Semantic Versioning (SemVer) for version management. Version numbers are automatically updated based on commit messages:
+
+- `fix: message` - Patch version update (bug fixes)
+- `feat: message` - Minor version update (new features)
+- `BREAKING CHANGE: message` - Major version update (breaking changes)
+
 ## License
 
-Copyright © 2025 Dedan Okware. All rights reserved.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
