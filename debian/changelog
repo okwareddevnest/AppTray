@@ -1,0 +1,10 @@
+apptray (1.0.0) unstable; urgency=medium
+
+  * Initial release.
+  * Features:
+    - Convert AppImage files to .deb packages
+    - Create desktop entries automatically
+    - Handle icons and dependencies
+    - Simple command-line interface
+
+ -- Dedan Okware <softengdedan@gmail.com>  Wed, 27 Mar 2024 12:00:00 +0300 

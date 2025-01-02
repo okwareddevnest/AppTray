@@ -1,0 +1,22 @@
+Source: apptray
+Section: utils
+Priority: optional
+Maintainer: Dedan Okware <softengdedan@gmail.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/okwareddevnest/apptray
+Vcs-Browser: https://github.com/okwareddevnest/apptray
+Vcs-Git: https://github.com/okwareddevnest/apptray.git
+
+Package: apptray
+Architecture: all
+Depends: ${misc:Depends}, imagemagick
+Description: Convert AppImage files to Debian packages
+ AppTray is a tool that helps you convert AppImage files into
+ Debian packages for easier installation and management.
+ .
+ Features:
+  * Convert AppImage files to .deb packages
+  * Create desktop entries automatically
+  * Handle icons and dependencies
+  * Simple command-line interface 

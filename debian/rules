@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -D -m 755 apptray "$(CURDIR)/debian/apptray/usr/bin/apptray"
+	install -D -m 755 package_appimage.sh "$(CURDIR)/debian/apptray/usr/lib/apptray/package_appimage.sh"
+	install -D -m 644 apptray.desktop "$(CURDIR)/debian/apptray/usr/share/applications/apptray.desktop"
+	install -D -m 644 apptray.png "$(CURDIR)/debian/apptray/usr/share/icons/hicolor/256x256/apps/apptray.png" 

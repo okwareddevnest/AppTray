@@ -19,3 +19,8 @@ debian/*.debhelper
 debian/files
 debian/.debhelper/
 debian/*/ 
+
+# GPG keys
+apptray_pub.key
+confirmation.asc
+apptray_sec.key
