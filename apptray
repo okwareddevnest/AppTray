@@ -1,0 +1,78 @@
+#!/bin/bash
+
+VERSION="1.0.0"
+
+# Show help message
+show_help() {
+    echo "AppTray - Convert AppImage files to Debian packages"
+    echo "Created by Dedan Okware <softengdedan@gmail.com>"
+    echo
+    echo "Usage: apptray [OPTIONS] <appimage-path> [app-name]"
+    echo
+    echo "Options:"
+    echo "  -h, --help     Show this help message"
+    echo "  -v, --version  Show version information"
+    echo "  -g, --gui      Launch the graphical interface"
+    echo
+    echo "Examples:"
+    echo "  apptray ~/Downloads/app.AppImage \"My App\""
+    echo "  apptray -g"
+    echo
+    echo "For more information, visit: https://github.com/okwareddevnest/apptray"
+}
+
+# Show version
+show_version() {
+    echo "AppTray version $VERSION"
+    echo "Copyright © 2025 Dedan Okware. All rights reserved."
+}
+
+# Main packaging function
+package_appimage() {
+    local APPIMAGE_PATH="$1"
+    local APP_NAME="$2"
+    
+    # Validate AppImage exists
+    if [ ! -f "$APPIMAGE_PATH" ]; then
+        echo "Error: AppImage file not found: $APPIMAGE_PATH"
+        exit 1
+    fi
+    
+    # Check if file is actually an AppImage
+    if ! file "$APPIMAGE_PATH" | grep -qi "appimage\|executable"; then
+        echo "Warning: File may not be a valid AppImage. Continuing anyway..."
+    fi
+    
+    # Call the packaging script
+    /usr/lib/apptray/package_appimage.sh "$APPIMAGE_PATH" "$APP_NAME"
+}
+
+# Parse command line arguments
+case "$1" in
+    -h|--help)
+        show_help
+        exit 0
+        ;;
+    -v|--version)
+        show_version
+        exit 0
+        ;;
+    -g|--gui)
+        # Launch GUI (will be implemented later)
+        zenity --error --text="GUI interface is coming soon!"
+        exit 0
+        ;;
+    "")
+        show_help
+        exit 1
+        ;;
+    *)
+        if [ -f "$1" ]; then
+            package_appimage "$1" "$2"
+        else
+            echo "Error: Invalid argument or file not found: $1"
+            echo "Use --help for usage information"
+            exit 1
+        fi
+        ;;
+esac 

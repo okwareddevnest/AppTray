@@ -1,0 +1,21 @@
+# Build artifacts
+*.deb
+*-package/
+*-*/
+
+# Temporary files
+*~
+*.swp
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+
+# Debian package build files
+debian/*.log
+debian/*.substvars
+debian/*.debhelper
+debian/files
+debian/.debhelper/
+debian/*/ 

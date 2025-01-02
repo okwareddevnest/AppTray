@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=AppTray
+Comment=Convert AppImage files to Debian packages (by Dedan Okware)
+Exec=apptray --gui
+Icon=apptray
+Type=Application
+Categories=Utility;System;
+Terminal=false
+Keywords=appimage;package;debian;converter;
+X-Created-By=Dedan Okware <softengdedan@gmail.com> 
